@@ -1,7 +1,6 @@
 package com.validation.auth.backend.dtos;
 
 import com.validation.auth.backend.entities.Provider;
-import com.validation.auth.backend.entities.Role;
 import lombok.*;
 
 import java.time.Instant;
