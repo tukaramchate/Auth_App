@@ -13,7 +13,7 @@ public interface UserService {
     UserDto updateUser(UserDto userDto, String userId);
 
     //delete user
-    void deleteUser(UserDto userDto);
+    void deleteUser(String userId);
 
     //get user by id
     UserDto getUserById(String userId);

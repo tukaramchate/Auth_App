@@ -1,4 +1,4 @@
-package com.validation.auth.backend.services;
+package com.validation.auth.backend.services.impl;
 
 import com.validation.auth.backend.dtos.UserDto;
 import com.validation.auth.backend.entities.Provider;
@@ -6,6 +6,7 @@ import com.validation.auth.backend.entities.User;
 import com.validation.auth.backend.exceptions.ResourceNotFoundException;
 import com.validation.auth.backend.helpers.UserHelper;
 import com.validation.auth.backend.repositores.UserRepository;
+import com.validation.auth.backend.services.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
