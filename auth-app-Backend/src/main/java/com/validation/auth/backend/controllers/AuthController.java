@@ -3,7 +3,9 @@ package com.validation.auth.backend.controllers;
 import com.validation.auth.backend.dtos.LoginRequest;
 import com.validation.auth.backend.dtos.TokenResponse;
 import com.validation.auth.backend.dtos.UserDto;
+import com.validation.auth.backend.entities.RefreshToken;
 import com.validation.auth.backend.entities.User;
+import com.validation.auth.backend.repositores.RefreshTokenRepository;
 import com.validation.auth.backend.repositores.UserRepository;
 import com.validation.auth.backend.security.JwtService;
 import com.validation.auth.backend.services.AuthService;
@@ -35,7 +37,7 @@ import java.util.UUID;
 public class AuthController {
 
     private final AuthService authService;
-//    private final RefreshTokenRepository refreshTokenRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
 
     private final AuthenticationManager authenticationManager;
@@ -54,11 +56,23 @@ public class AuthController {
             throw new DisabledException("User is disabled");
 
         }
+        String jti = UUID.randomUUID().toString();
+        var refreshTokenOb = RefreshToken.builder()
+                .jti(jti)
+                .user(user)
+                .createdAt(Instant.now())
+                .expiresAt(Instant.now().plusSeconds(jwtService.getRefreshTtlSeconds()))
+                .revoked(false)
+                .build();
+
+        //refresh token save--information
+        refreshTokenRepository.save(refreshTokenOb);
 
         //access token--generate
         String accessToken = jwtService.generateAccessToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user, refreshTokenOb.getJti());
 
-        TokenResponse tokenResponse = TokenResponse.of(accessToken, "", jwtService.getAccessTtlSeconds(), mapper.map(user, UserDto.class));
+        TokenResponse tokenResponse = TokenResponse.of(accessToken, refreshToken, jwtService.getAccessTtlSeconds(), mapper.map(user, UserDto.class));
         return ResponseEntity.ok(tokenResponse);
     }
 
