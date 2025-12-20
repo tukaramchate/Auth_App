@@ -12,13 +12,15 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
 @Entity
 @Table(name = "roles")
 public class Role {
+
     @Id
     @Column(name = "roles_id")
     private UUID id = UUID.randomUUID();
+
     @Column(unique = true, nullable = false)
     private String name;
+
 }

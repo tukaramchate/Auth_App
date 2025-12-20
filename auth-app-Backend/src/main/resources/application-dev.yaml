@@ -19,7 +19,6 @@ spring:
 
 # jpa and hibernate configurations
 
-
 logging:
   level:
       org.springframework.security: DEBUG

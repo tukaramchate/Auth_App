@@ -24,6 +24,7 @@ import java.util.UUID;
 @Getter
 @Setter
 public class JwtService {
+
     private final SecretKey key;
     private final long accessTtlSeconds;
     private final long refreshTtlSeconds;
@@ -114,4 +115,5 @@ public class JwtService {
         Claims c = parse(token).getPayload();
         return (String) c.get("email");
     }
+
 }

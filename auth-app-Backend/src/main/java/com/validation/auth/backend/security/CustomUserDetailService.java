@@ -1,7 +1,5 @@
 package com.validation.auth.backend.security;
 
-import com.validation.auth.backend.entities.User;
-import com.validation.auth.backend.exceptions.ResourceNotFoundException;
 import com.validation.auth.backend.repositores.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -21,4 +19,5 @@ public class CustomUserDetailService implements UserDetailsService {
 
         return userRepository.findByEmail(username).orElseThrow(() -> new BadCredentialsException("Invalid username or password !!"));
     }
+
 }

@@ -24,6 +24,7 @@ public class GlobalExceptionHandler {
             CredentialsExpiredException.class,
             DisabledException.class
     })
+
     public ResponseEntity<ApiError> handleAuthException(Exception e, HttpServletRequest request) {
         logger.info("Exception  : {}", e.getClass().getName());
         var apiError=ApiError.of(HttpStatus.BAD_REQUEST.value(), "Bad Request", e.getMessage(), request.getRequestURI());
@@ -43,4 +44,5 @@ public class GlobalExceptionHandler {
         ErrorResponse internalServerError = new ErrorResponse(exception.getMessage(), HttpStatus.BAD_REQUEST,400);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(internalServerError);
     }
+
 }

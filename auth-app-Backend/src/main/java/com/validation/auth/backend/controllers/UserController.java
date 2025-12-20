@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/users")
 @AllArgsConstructor
 public class UserController {
+
     private final UserService userService;
 
 
@@ -20,17 +21,20 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(userDto));
     }
 
+
     //get all user api
     @GetMapping
     public ResponseEntity<Iterable<UserDto>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
+
     // get user by email
     @GetMapping("/email/{email}")
     public ResponseEntity<UserDto> getUserByEmail(@PathVariable String email) {
         return ResponseEntity.ok(userService.getUserByEmail(email));
     }
+
 
     //delete user
     //api/v1/users/{userId}
@@ -39,6 +43,7 @@ public class UserController {
         userService.deleteUser(userId);
     }
 
+
     //update user
     //api/v1/users/{userId}
     @PutMapping("/{userId}")
@@ -46,12 +51,12 @@ public class UserController {
         return ResponseEntity.ok(userService.updateUser(userDto, userId));
     }
 
+
     //get user by id
     //api/v1/users/{userId}
     @GetMapping("/{userId}")
     public ResponseEntity<UserDto> getUserById(@PathVariable("userId") String userId) {
         return ResponseEntity.ok(userService.getUserById(userId));
     }
-
 
 }

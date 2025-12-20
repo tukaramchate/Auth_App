@@ -14,6 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class UserDto {
+
     private UUID id;
     private String email;
     private String name;
@@ -24,4 +25,5 @@ public class UserDto {
     private Instant updatedAt =  Instant.now();
     private Provider provider = Provider.LOCAL;
     private Set<RoleDto> roles = new HashSet<>();
+
 }

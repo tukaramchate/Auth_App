@@ -6,6 +6,6 @@ public record ErrorResponse(
         String message,
         HttpStatus httpStatus,
         int status
-
 ) {
+
 }

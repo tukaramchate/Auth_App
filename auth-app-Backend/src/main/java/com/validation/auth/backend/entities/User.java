@@ -16,10 +16,10 @@ import java.util.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
 @Entity
 @Table(name = "user")
 public class User implements UserDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "user_id")
@@ -92,4 +92,5 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return this.enable;
     }
+
 }

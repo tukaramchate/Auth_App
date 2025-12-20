@@ -9,13 +9,8 @@ import com.validation.auth.backend.repositores.RefreshTokenRepository;
 import com.validation.auth.backend.repositores.UserRepository;
 import com.validation.auth.backend.security.JwtService;
 import com.validation.auth.backend.services.AuthService;
-import io.jsonwebtoken.JwtException;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,12 +18,9 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -38,7 +30,6 @@ public class AuthController {
 
     private final AuthService authService;
     private final RefreshTokenRepository refreshTokenRepository;
-
 
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
@@ -51,7 +42,8 @@ public class AuthController {
 
         //authenticate
         Authentication authenticate = authenticate(loginRequest);
-        User user = userRepository.findByEmail(loginRequest.email()).orElseThrow(() -> new BadCredentialsException("Invalid Username or Password"));
+        User user = userRepository.findByEmail(loginRequest.email()).orElseThrow(() ->
+                new BadCredentialsException("Invalid Username or Password"));
         if (!user.isEnable()) {
             throw new DisabledException("User is disabled");
 
@@ -78,9 +70,7 @@ public class AuthController {
 
     private Authentication authenticate(LoginRequest loginRequest) {
         try {
-
             return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.email(), loginRequest.password()));
-
         } catch (Exception e) {
             throw new BadCredentialsException("Invalid Username or Password !!");
         }
@@ -91,4 +81,5 @@ public class AuthController {
     public ResponseEntity<UserDto> registerUser(@RequestBody UserDto userDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(authService.registerUser(userDto));
     }
+
 }

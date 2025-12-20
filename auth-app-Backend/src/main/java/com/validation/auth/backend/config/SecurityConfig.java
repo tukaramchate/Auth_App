@@ -3,8 +3,6 @@ package com.validation.auth.backend.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.validation.auth.backend.dtos.ApiError;
 import com.validation.auth.backend.security.JwtAuthenticationFilter;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,9 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Configuration
 public class  SecurityConfig {
 
@@ -34,7 +29,8 @@ public class  SecurityConfig {
 
         http.csrf(AbstractHttpConfigurer :: disable)
                 .cors(Customizer.withDefaults())
-                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(sm ->
+                        sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
                 authorizeRequests ->
                         authorizeRequests
@@ -42,7 +38,8 @@ public class  SecurityConfig {
                                 .requestMatchers("/api/v1/auth/login").permitAll()
                                 .anyRequest().authenticated()
                 )
-                .exceptionHandling(ex -> ex.authenticationEntryPoint((request, response, e) -> {
+                .exceptionHandling(ex ->
+                        ex.authenticationEntryPoint((request, response, e) -> {
                     //error message
                     e.printStackTrace();
                     response.setStatus(401);
@@ -63,7 +60,6 @@ public class  SecurityConfig {
         return http.build();
 
     }
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {

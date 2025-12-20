@@ -3,6 +3,7 @@ package com.validation.auth.backend.services;
 import com.validation.auth.backend.dtos.UserDto;
 
 public interface UserService {
+
     //create user
     UserDto createUser(UserDto userDto);
 
@@ -20,6 +21,5 @@ public interface UserService {
 
     //get all users
     Iterable<UserDto> getAllUsers();
-
 
 }

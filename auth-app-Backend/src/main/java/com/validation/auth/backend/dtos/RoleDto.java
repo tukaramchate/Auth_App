@@ -10,6 +10,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class RoleDto {
+
     private UUID id;
     private String name;
+
 }
