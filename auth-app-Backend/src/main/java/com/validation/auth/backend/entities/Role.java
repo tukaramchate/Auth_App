@@ -1,9 +1,6 @@
 package com.validation.auth.backend.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.UUID;
@@ -17,10 +14,12 @@ import java.util.UUID;
 public class Role {
 
     @Id
-    @Column(name = "roles_id")
-    private UUID id = UUID.randomUUID();
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "roles_id", updatable = false, nullable = false)
+    private UUID id;
 
-    @Column(unique = true, nullable = false)
+
+    @Column(unique = true, nullable = false, updatable = false)
     private String name;
 
 }

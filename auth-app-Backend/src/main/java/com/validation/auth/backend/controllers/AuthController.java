@@ -1,7 +1,9 @@
 package com.validation.auth.backend.controllers;
 
 import com.validation.auth.backend.dtos.LoginRequest;
+import com.validation.auth.backend.dtos.MessageResponse;
 import com.validation.auth.backend.dtos.RefreshTokenRequest;
+import com.validation.auth.backend.dtos.ResendVerificationRequest;
 import com.validation.auth.backend.dtos.TokenResponse;
 import com.validation.auth.backend.dtos.UserDto;
 import com.validation.auth.backend.entities.RefreshToken;
@@ -226,6 +228,18 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<UserDto> registerUser(@RequestBody UserDto userDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(authService.registerUser(userDto));
+    }
+
+    @GetMapping("/verify-email")
+    public ResponseEntity<MessageResponse> verifyEmail(@RequestParam("token") String token) {
+        authService.verifyEmail(token);
+        return ResponseEntity.ok(new MessageResponse("Email verified successfully"));
+    }
+
+    @PostMapping("/resend-verification")
+    public ResponseEntity<MessageResponse> resendVerification(@RequestBody ResendVerificationRequest request) {
+        authService.resendVerificationEmail(request.email());
+        return ResponseEntity.ok(new MessageResponse("Verification email sent"));
     }
 
 }

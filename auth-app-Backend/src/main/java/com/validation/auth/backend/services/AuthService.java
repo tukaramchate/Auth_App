@@ -5,5 +5,8 @@ import com.validation.auth.backend.dtos.UserDto;
 public interface AuthService {
     //register user
     UserDto registerUser(UserDto userDto);
-    //login user
+
+    void verifyEmail(String token);
+
+    void resendVerificationEmail(String email);
 }

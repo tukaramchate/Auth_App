@@ -25,12 +25,16 @@ public class User implements UserDetails {
     @Column(name = "user_id")
     private UUID id;
 
-    @Column(unique = true,length = 300 )
+    @Email(message = "Invalid email format")
+    @NotBlank(message = "Email is required")
+    @Column(unique = true, length = 300, nullable = false)
     private String email;
 
-    @Column(length = 500 )
+    @NotBlank(message = "Name is required")
+    @Column(length = 500)
     private String name;
 
+    @Column(length = 500)
     private String password;
     private String image;
     private boolean enable = true;
@@ -40,6 +44,7 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private Provider provider = Provider.LOCAL;
+    private String providerId;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles",

@@ -1,23 +1,92 @@
-HELP.md
+### Environment Variables ###
+# CRITICAL: Never commit sensitive credentials
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+
+### Spring Boot ###
 target/
-.mvn/wrapper/maven-wrapper.jar
+build/
 !**/src/main/**/target/
 !**/src/test/**/target/
+!**/src/main/**/build/
+!**/src/test/**/build/
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
+### Compiled Class Files ###
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+
+### Log Files ###
+logs/
+*.log
+log/
+spring.log
+
+### Package Files ###
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+### Maven ###
+.mvn/
+mvnw
+mvnw.cmd
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+### Gradle ###
+.gradle/
+gradle/
+gradlew
+gradlew.bat
+gradle-app.setting
+!gradle-wrapper.jar
 
 ### IntelliJ IDEA ###
-.idea
-*.iws
+.idea/
 *.iml
+*.iws
 *.ipr
+out/
+.idea_modules/
+*.launch
+
+### Eclipse ###
+.classpath
+.project
+.settings/
+.metadata/
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.loadpath
+.recommenders
+
+### VS Code ###
+.vscode/
+*.code-workspace
+.history/
 
 ### NetBeans ###
 /nbproject/private/
@@ -25,9 +94,87 @@ target/
 /dist/
 /nbdist/
 /.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
 
-### VS Code ###
-.vscode/
+### macOS ###
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+### Windows ###
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+### Linux ###
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+### Application Specific ###
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Application logs
+application.log
+application-*.log
+
+# H2 Database (if used for testing)
+*.h2.db
+*.trace.db
+
+# Security certificates (if stored locally)
+*.jks
+*.keystore
+*.p12
+*.pem
+*.crt
+*.key
+
+# Coverage reports
+*.gcov
+*.lcov
+coverage/
+.nyc_output/
+
+# Test outputs
+test-output/
+test-results/
+
+# Node modules (if frontend is in same repo)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Backup files
+*.backup
+*.old
