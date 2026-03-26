@@ -1,8 +1,8 @@
 package com.validation.auth.backend.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.validation.auth.backend.dtos.ApiError;
-import com.validation.auth.backend.security.JwtAuthenticationFilter;
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -23,8 +23,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
-import java.util.List;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.validation.auth.backend.dtos.ApiError;
+import com.validation.auth.backend.security.JwtAuthenticationFilter;
 
 @Configuration
 public class  SecurityConfig {
@@ -39,7 +40,10 @@ public class  SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            @Value("${app.auth.frontend.failure-redirect}") String frontEndFailureUrl
+    ) throws Exception {
 
         http.csrf(AbstractHttpConfigurer :: disable)
                 .cors(Customizer.withDefaults())
@@ -53,7 +57,8 @@ public class  SecurityConfig {
                 )
                 .oauth2Login(oauth2 ->
                             oauth2.successHandler(successHandler)
-                                    .failureHandler(null)
+                            .failureHandler((request, response, exception) ->
+                                response.sendRedirect(frontEndFailureUrl))
                         )
                 .logout(AbstractHttpConfigurer :: disable)
                 .exceptionHandling(ex ->
