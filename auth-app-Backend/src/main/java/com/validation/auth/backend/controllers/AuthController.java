@@ -1,23 +1,10 @@
 package com.validation.auth.backend.controllers;
 
-import com.validation.auth.backend.dtos.LoginRequest;
-import com.validation.auth.backend.dtos.MessageResponse;
-import com.validation.auth.backend.dtos.RefreshTokenRequest;
-import com.validation.auth.backend.dtos.ResendVerificationRequest;
-import com.validation.auth.backend.dtos.TokenResponse;
-import com.validation.auth.backend.dtos.UserDto;
-import com.validation.auth.backend.entities.RefreshToken;
-import com.validation.auth.backend.entities.User;
-import com.validation.auth.backend.repositores.RefreshTokenRepository;
-import com.validation.auth.backend.repositores.UserRepository;
-import com.validation.auth.backend.security.CookieService;
-import com.validation.auth.backend.security.JwtService;
-import com.validation.auth.backend.services.AuthService;
-import io.jsonwebtoken.JwtException;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.AllArgsConstructor;
+import java.time.Instant;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -28,12 +15,34 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.time.Instant;
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.UUID;
+import com.validation.auth.backend.dtos.ForgotPasswordRequest;
+import com.validation.auth.backend.dtos.LoginRequest;
+import com.validation.auth.backend.dtos.MessageResponse;
+import com.validation.auth.backend.dtos.RefreshTokenRequest;
+import com.validation.auth.backend.dtos.ResendVerificationRequest;
+import com.validation.auth.backend.dtos.ResetPasswordRequest;
+import com.validation.auth.backend.dtos.TokenResponse;
+import com.validation.auth.backend.dtos.UserDto;
+import com.validation.auth.backend.entities.RefreshToken;
+import com.validation.auth.backend.entities.User;
+import com.validation.auth.backend.repositores.RefreshTokenRepository;
+import com.validation.auth.backend.repositores.UserRepository;
+import com.validation.auth.backend.security.CookieService;
+import com.validation.auth.backend.security.JwtService;
+import com.validation.auth.backend.services.AuthService;
+
+import io.jsonwebtoken.JwtException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -240,6 +249,18 @@ public class AuthController {
     public ResponseEntity<MessageResponse> resendVerification(@RequestBody ResendVerificationRequest request) {
         authService.resendVerificationEmail(request.email());
         return ResponseEntity.ok(new MessageResponse("Verification email sent"));
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<MessageResponse> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        authService.forgotPassword(request.email());
+        return ResponseEntity.ok(new MessageResponse("If the email exists, a reset link has been sent"));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<MessageResponse> resetPassword(@RequestBody ResetPasswordRequest request) {
+        authService.resetPassword(request.token(), request.newPassword());
+        return ResponseEntity.ok(new MessageResponse("Password reset successful"));
     }
 
 }
