@@ -92,6 +92,17 @@ security:
 app:
   cors:
     front-end-url: ${FRONTEND_URL:http://localhost:5173}
+  bootstrap:
+    admin:
+      enabled: ${BOOTSTRAP_ADMIN_ENABLED:true}
+      first:
+        email: ${BOOTSTRAP_ADMIN1_EMAIL:admin1@auth-app.local}
+        password: ${BOOTSTRAP_ADMIN1_PASSWORD:Admin@123}
+        name: ${BOOTSTRAP_ADMIN1_NAME:Primary Admin}
+      second:
+        email: ${BOOTSTRAP_ADMIN2_EMAIL:admin2@auth-app.local}
+        password: ${BOOTSTRAP_ADMIN2_PASSWORD:Admin@123}
+        name: ${BOOTSTRAP_ADMIN2_NAME:Secondary Admin}
   auth:
     email:
       from: ${AUTH_EMAIL_FROM:no-reply@auth-app.local}

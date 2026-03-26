@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
@@ -52,6 +53,9 @@ public class  SecurityConfig {
                 .authorizeHttpRequests(
                 authorizeRequests ->
                         authorizeRequests
+                        .requestMatchers(HttpMethod.GET, "/api/v1/users").hasAuthority(AppConstants.ADMIN_ROLE)
+                        .requestMatchers(HttpMethod.POST, "/api/v1/users").hasAuthority(AppConstants.ADMIN_ROLE)
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/users/**").hasAuthority(AppConstants.ADMIN_ROLE)
                                 .requestMatchers(AppConstants.AUTH_PUBLIC_URLS).permitAll()
                                 .anyRequest().authenticated()
                 )

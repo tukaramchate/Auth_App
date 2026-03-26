@@ -1,19 +1,23 @@
 package com.validation.auth.backend.services.impl;
 
+import java.time.Instant;
+import java.util.UUID;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import com.validation.auth.backend.dtos.UserDto;
 import com.validation.auth.backend.entities.Provider;
 import com.validation.auth.backend.entities.User;
 import com.validation.auth.backend.exceptions.ResourceNotFoundException;
 import com.validation.auth.backend.helpers.UserHelper;
 import com.validation.auth.backend.repositores.UserRepository;
+import com.validation.auth.backend.services.DefaultRoleService;
 import com.validation.auth.backend.services.UserService;
+
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Service;
-
-import java.time.Instant;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +25,8 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final DefaultRoleService defaultRoleService;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
@@ -36,7 +42,10 @@ public class UserServiceImpl implements UserService {
 
         User user = modelMapper.map(userDto, User.class);
         user.setProvider(userDto.getProvider() != null ? userDto.getProvider() : Provider.LOCAL);
-        // role assign here to user__for authorization
+        if (user.getPassword() != null && !user.getPassword().isBlank() && !isBcryptHash(user.getPassword())) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
+        user.setRoles(defaultRoleService.ensureAtLeastUserRole(user.getRoles()));
 
         User saveduser = userRepository.save(user);
         return modelMapper.map(saveduser, UserDto.class);
@@ -89,6 +98,10 @@ public class UserServiceImpl implements UserService {
                 .findAll().stream()
                 .map(user -> modelMapper.map(user, UserDto.class))
                 .toList();
+    }
+
+    private boolean isBcryptHash(String value) {
+        return value.startsWith("$2a$") || value.startsWith("$2b$") || value.startsWith("$2y$");
     }
 
 }
