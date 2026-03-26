@@ -1,0 +1,1 @@
+Full-stack auth app (Spring Boot + React) with JWT, refresh tokens, and OAuth2 login.
