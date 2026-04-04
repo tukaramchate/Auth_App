@@ -45,7 +45,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     @Transactional
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         logger.info("Successful authentication");
-        logger.info(authentication.toString());
 
 
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
@@ -57,8 +56,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
             registrationId = token.getAuthorizedClientRegistrationId();
         }
 
-        logger.info("registrationId:" + registrationId);
-        logger.info("user:" + oAuth2User.getAttributes().toString());
+        logger.info("OAuth2 registrationId: {}", registrationId);
 
         User user;
         switch (registrationId) {
@@ -156,7 +154,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         refreshTokenRepository.save(refreshTokenOb);
 
-        String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user, refreshTokenOb.getJti());
         cookieService.attachRefreshCookie(response, refreshToken, (int) jwtService.getRefreshTtlSeconds());
 //        response.getWriter().write("Login successful");

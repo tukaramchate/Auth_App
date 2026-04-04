@@ -1,29 +1,41 @@
-Forgot Password + Reset Password
-Most important missing user flow. Add email token, expiry, reset form, and success/failure UI.
+# Project Features and Overview
 
-Email Verification Hardening
-You already added verification; now add resend cooldown, token expiry messaging, and anti-abuse limits.
+## Project Idea
+This project is a full-stack authentication application designed to provide secure, modern, and user-friendly authentication and authorization flows for web applications. It supports both traditional and OAuth-based login, robust user management, and production-grade security features for real-world deployment.
 
-OAuth Account Linking
-Let one user connect Google/GitHub/LinkedIn to the same account instead of creating duplicates.
+## Key Features
 
-Role-Based Admin Panel
-Add admin-only screens: user list, enable/disable users, revoke sessions, assign roles.
+1. **User Authentication & Authorization**
+   - Email/password registration and login
+   - OAuth2 login with Google, GitHub, LinkedIn
+   - Email verification with anti-abuse protections
+   - Role-based access control (Admin, User, etc.)
 
-Session & Device Management
-Show active sessions/devices and allow logout from one device or all devices.
+2. **Password & Account Management**
+   - Forgot password and reset password via email token
+   - Session and device management (view and revoke sessions)
+   - Two-Factor Authentication (2FA) using TOTP (Google Authenticator)
 
-Two-Factor Authentication (2FA)
-Add TOTP (Google Authenticator style) for high-security accounts.
+3. **Admin Panel**
+   - Admin-only dashboard for user management
+   - Enable/disable users, assign roles, revoke sessions
+   - View user list with pagination and filtering
 
-Security Audit Features
-Login history, failed login attempts, suspicious location/device warnings.
+4. **Security & Audit**
+   - Login history and failed login tracking
+   - Suspicious activity warnings (location/device)
+   - Rate limiting and request validation on auth endpoints
+   - Structured logging and monitoring
 
-Better Error UX
-Dedicated pages for unverified email, disabled account, OAuth failure reasons, and retry guidance.
+5. **User Experience**
+   - Dedicated error pages for common auth issues
+   - Clear feedback for verification, password reset, and OAuth failures
+   - Responsive and modern frontend UI
 
-API Quality Features
-Pagination/filtering for users, standard error shape, request validation everywhere, and rate limiting on auth endpoints.
+6. **Production Readiness**
+   - Database migration tool integration (Flyway/Liquibase)
+   - Full test coverage for backend and frontend flows
+   - Environment-based configuration (dev, qa, prod)
 
-Production Readiness
-Add migration tool (Flyway/Liquibase), structured logs, monitoring, and full test coverage (backend + frontend flows).
+## Summary
+This project aims to deliver a secure, extensible, and production-ready authentication system suitable for modern web applications, with a focus on usability, security, and maintainability.

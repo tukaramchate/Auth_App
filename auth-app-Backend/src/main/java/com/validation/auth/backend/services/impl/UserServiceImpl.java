@@ -70,8 +70,9 @@ public class UserServiceImpl implements UserService {
         if (userDto.getName() != null) existingUser.setName(userDto.getName());
         if (userDto.getImage() != null) existingUser.setImage(userDto.getImage());
         if (userDto.getProvider() != null) existingUser.setProvider(userDto.getProvider());
-        //TODO: change password updation logic...
-        if (userDto.getPassword() != null) existingUser.setPassword(userDto.getPassword());
+        if (userDto.getPassword() != null && !userDto.getPassword().isBlank()) {
+            existingUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        }
         existingUser.setEnable(userDto.isEnable());
         existingUser.setUpdatedAt(Instant.now());
         User updatedUser = userRepository.save(existingUser);

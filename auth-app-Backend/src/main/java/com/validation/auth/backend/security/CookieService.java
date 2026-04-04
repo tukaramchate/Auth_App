@@ -1,12 +1,12 @@
 package com.validation.auth.backend.security;
 
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.Getter;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
+
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
 
 @Service
 @Getter
@@ -17,8 +17,6 @@ public class CookieService {
     private final boolean cookieSecure;
     private final String cookieDomain;
     private final String cookieSameSite;
-
-    private  final Logger logger = org.slf4j.LoggerFactory.getLogger(CookieService.class);
 
     public CookieService(
 
@@ -37,8 +35,6 @@ public class CookieService {
 
     //create method to attach cookie to response.
     public void attachRefreshCookie(HttpServletResponse response, String value, int maxAge) {
-
-        logger.info("Attaching cookie with name: {} and value: {}", refreshTokenCookieName, value);
         var responseCookieBuilder = ResponseCookie.from(refreshTokenCookieName, value)
                 .httpOnly(cookieHttpOnly)
                 .secure(cookieSecure)
