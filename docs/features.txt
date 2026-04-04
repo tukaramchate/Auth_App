@@ -3,39 +3,60 @@
 ## Project Idea
 This project is a full-stack authentication application designed to provide secure, modern, and user-friendly authentication and authorization flows for web applications. It supports both traditional and OAuth-based login, robust user management, and production-grade security features for real-world deployment.
 
-## Key Features
+## Current Implemented Features
 
 1. **User Authentication & Authorization**
    - Email/password registration and login
    - OAuth2 login with Google, GitHub, LinkedIn
-   - Email verification with anti-abuse protections
+   - Email verification flow (verify + resend endpoints/pages)
    - Role-based access control (Admin, User, etc.)
 
 2. **Password & Account Management**
    - Forgot password and reset password via email token
-   - Session and device management (view and revoke sessions)
-   - Two-Factor Authentication (2FA) using TOTP (Google Authenticator)
+   - Session and device management (view sessions, revoke one session, revoke all sessions)
 
 3. **Admin Panel**
    - Admin-only dashboard for user management
-   - Enable/disable users, assign roles, revoke sessions
-   - View user list with pagination and filtering
+   - Enable/disable users
+   - Assign roles
+   - Revoke user sessions
+   - View user list with role and status controls
 
 4. **Security & Audit**
-   - Login history and failed login tracking
-   - Suspicious activity warnings (location/device)
    - Rate limiting and request validation on auth endpoints
-   - Structured logging and monitoring
+   - Refresh token security hardening (cookie-based refresh, no refresh token in response body)
+   - Reduced sensitive token/header logging
 
 5. **User Experience**
-   - Dedicated error pages for common auth issues
+   - OAuth failure route and core auth error feedback improvements
    - Clear feedback for verification, password reset, and OAuth failures
    - Responsive and modern frontend UI
 
-6. **Production Readiness**
-   - Database migration tool integration (Flyway/Liquibase)
-   - Full test coverage for backend and frontend flows
+6. **Configuration & Environment**
    - Environment-based configuration (dev, qa, prod)
+   - Bootstrap admin support via environment variables
+
+## Planned / Next Features
+
+1. **OAuth Account Linking**
+   - Link multiple OAuth providers to a single user identity.
+
+2. **Two-Factor Authentication (2FA)**
+   - TOTP enrollment and verification.
+   - Recovery code support.
+
+3. **Security Audit Features**
+   - Login history and failed-attempt tracking.
+   - Suspicious activity detection and alerts.
+
+4. **API Quality Enhancements**
+   - Pagination and filtering standardization.
+   - Unified error schema across all endpoints.
+
+5. **Production Readiness Enhancements**
+   - Database migration baseline with Flyway/Liquibase.
+   - Monitoring and observability setup.
+   - Expanded automated test coverage for backend/frontend auth scenarios.
 
 ## Summary
-This project aims to deliver a secure, extensible, and production-ready authentication system suitable for modern web applications, with a focus on usability, security, and maintainability.
+This project already delivers a strong authentication foundation with secure session handling, role-aware admin controls, and hardened auth flows. The remaining roadmap focuses on advanced security layers, API consistency, and production operations maturity.

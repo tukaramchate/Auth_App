@@ -81,8 +81,37 @@ public class AuthAppBackendApplication implements CommandLineRunner {
             return;
         }
 
-        if (userRepository.existsByEmail(email)) {
-            logger.info("Admin user already exists: {}", email);
+        var existingAdmin = userRepository.findByEmail(email);
+        if (existingAdmin.isPresent()) {
+            User user = existingAdmin.get();
+            boolean changed = false;
+
+            if (!user.isEnable()) {
+                user.setEnable(true);
+                changed = true;
+            }
+
+            if (user.getRoles() == null) {
+                user.setRoles(new HashSet<>());
+                changed = true;
+            }
+
+            if (!user.getRoles().contains(adminRole)) {
+                user.getRoles().add(adminRole);
+                changed = true;
+            }
+
+            if (user.getPassword() == null || !passwordEncoder.matches(rawPassword, user.getPassword())) {
+                user.setPassword(passwordEncoder.encode(rawPassword));
+                changed = true;
+            }
+
+            if (changed) {
+                userRepository.save(user);
+                logger.info("Admin user synchronized: {}", email);
+            } else {
+                logger.info("Admin user already up to date: {}", email);
+            }
             return;
         }
 

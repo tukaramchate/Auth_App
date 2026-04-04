@@ -1,5 +1,7 @@
 package com.validation.auth.backend.services;
 
+import java.util.List;
+
 import com.validation.auth.backend.dtos.UserDto;
 
 public interface UserService {
@@ -21,5 +23,10 @@ public interface UserService {
 
     //get all users
     Iterable<UserDto> getAllUsers();
+
+    //admin update user status and roles
+    UserDto updateUserAdmin(String userId, UserDto userDto);
+
+    List<String> getSystemRoleNames();
 
 }
