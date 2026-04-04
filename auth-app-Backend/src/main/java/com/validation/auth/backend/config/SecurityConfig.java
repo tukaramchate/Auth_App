@@ -3,10 +3,12 @@ package com.validation.auth.backend.config;
 import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
@@ -26,16 +28,24 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.validation.auth.backend.dtos.ApiError;
 import com.validation.auth.backend.security.JwtAuthenticationFilter;
+import com.validation.auth.backend.security.RateLimitingFilter;
 
 @Configuration
 public class  SecurityConfig {
 
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
-    private AuthenticationSuccessHandler successHandler;
+    private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
 
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, AuthenticationSuccessHandler successHandler) {
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final RateLimitingFilter rateLimitingFilter;
+    private final AuthenticationSuccessHandler successHandler;
+
+    public SecurityConfig(
+            JwtAuthenticationFilter jwtAuthenticationFilter,
+            RateLimitingFilter rateLimitingFilter,
+            AuthenticationSuccessHandler successHandler
+    ) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.rateLimitingFilter = rateLimitingFilter;
         this.successHandler = successHandler;
     }
 
@@ -52,6 +62,8 @@ public class  SecurityConfig {
                 .authorizeHttpRequests(
                 authorizeRequests ->
                         authorizeRequests
+                    .requestMatchers(HttpMethod.GET, "/api/v1/users/me").authenticated()
+                    .requestMatchers("/api/v1/users/**").hasAuthority(AppConstants.ADMIN_ROLE)
                                 .requestMatchers(AppConstants.AUTH_PUBLIC_URLS).permitAll()
                                 .anyRequest().authenticated()
                 )
@@ -63,8 +75,7 @@ public class  SecurityConfig {
                 .logout(AbstractHttpConfigurer :: disable)
                 .exceptionHandling(ex ->
                         ex.authenticationEntryPoint((request, response, e) -> {
-                    //error message
-                    e.printStackTrace();
+                    logger.debug("Unauthorized access attempt: {}", e.getMessage());
                     response.setStatus(401);
                     response.setContentType("application/json");
                     String message = e.getMessage();
@@ -73,11 +84,11 @@ public class  SecurityConfig {
                     if (error != null) {
                         message = error;
                     }
-//                    Map<String, Object> errorMap = Map.of("message", message, "statusCode", 404);
                     var apiError = ApiError.of(HttpStatus.UNAUTHORIZED.value(), "Unauthorized Access", message, request.getRequestURI(), true);
                     var objectMapper = new ObjectMapper();
                     response.getWriter().write(objectMapper.writeValueAsString(apiError));
                 }))
+                .addFilterBefore(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

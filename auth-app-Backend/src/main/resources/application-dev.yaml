@@ -25,7 +25,7 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
-    show-sql: true
+    show-sql: false
   security:
     #    oauth2 configurations
     oauth2:
@@ -72,7 +72,7 @@ spring:
 
 logging:
   level:
-      org.springframework.security: DEBUG
+    org.springframework.security: INFO
 
 
 security:
@@ -92,6 +92,17 @@ security:
 app:
   cors:
     front-end-url: ${FRONTEND_URL:http://localhost:5173}
+  bootstrap:
+    admin:
+      enabled: ${BOOTSTRAP_ADMIN_ENABLED:false}
+      first:
+        email: ${BOOTSTRAP_ADMIN1_EMAIL:admin1@auth-app.local}
+        password: ${BOOTSTRAP_ADMIN1_PASSWORD:}
+        name: ${BOOTSTRAP_ADMIN1_NAME:Primary Admin}
+      second:
+        email: ${BOOTSTRAP_ADMIN2_EMAIL:admin2@auth-app.local}
+        password: ${BOOTSTRAP_ADMIN2_PASSWORD:}
+        name: ${BOOTSTRAP_ADMIN2_NAME:Secondary Admin}
   auth:
     email:
       from: ${AUTH_EMAIL_FROM:no-reply@auth-app.local}
@@ -106,3 +117,31 @@ app:
       failure-redirect: ${FRONTEND_FAILURE_URL:http://localhost:5173/oauth/failure}
       verify-email-url: ${FRONTEND_VERIFY_EMAIL_URL:http://localhost:5173/verify-email}
       reset-password-url: ${FRONTEND_RESET_PASSWORD_URL:http://localhost:5173/reset-password}
+  rate-limit:
+    enabled: ${APP_RATE_LIMIT_ENABLED:true}
+    rules:
+      - name: login
+        path-pattern: /api/v1/auth/login
+        method: POST
+        limit: ${APP_RATE_LIMIT_LOGIN_LIMIT:5}
+        window-seconds: ${APP_RATE_LIMIT_LOGIN_WINDOW_SECONDS:60}
+      - name: register
+        path-pattern: /api/v1/auth/register
+        method: POST
+        limit: ${APP_RATE_LIMIT_REGISTER_LIMIT:10}
+        window-seconds: ${APP_RATE_LIMIT_REGISTER_WINDOW_SECONDS:300}
+      - name: forgot-password
+        path-pattern: /api/v1/auth/forgot-password
+        method: POST
+        limit: ${APP_RATE_LIMIT_FORGOT_PASSWORD_LIMIT:5}
+        window-seconds: ${APP_RATE_LIMIT_FORGOT_PASSWORD_WINDOW_SECONDS:300}
+      - name: reset-password
+        path-pattern: /api/v1/auth/reset-password
+        method: POST
+        limit: ${APP_RATE_LIMIT_RESET_PASSWORD_LIMIT:10}
+        window-seconds: ${APP_RATE_LIMIT_RESET_PASSWORD_WINDOW_SECONDS:300}
+      - name: refresh-token
+        path-pattern: /api/v1/auth/refresh
+        method: POST
+        limit: ${APP_RATE_LIMIT_REFRESH_LIMIT:30}
+        window-seconds: ${APP_RATE_LIMIT_REFRESH_WINDOW_SECONDS:60}

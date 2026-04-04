@@ -1,0 +1,40 @@
+Project Feature Backlog and Status (April 2026)
+
+Completed
+1. Forgot Password + Reset Password
+	- End-to-end backend and frontend flow implemented.
+2. Email Verification Base Flow
+	- Verification and resend endpoints/pages available; core behavior present.
+3. Role-Based Admin Panel (Base)
+	- Admin dashboard and user management base features implemented.
+4. Better Error UX (Partial)
+	- OAuth failure route and major auth feedback paths improved.
+5. API Quality Features (Partial)
+	- Request validation added on key auth endpoints.
+	- Auth endpoint rate limiting implemented.
+6. Security Hardening (Major)
+	- Plaintext password update fix.
+	- Refresh token removed from response body.
+	- Sensitive token/header logging reduced.
+	- Access token removed from persisted frontend storage.
+
+Pending / Next
+1. OAuth Account Linking
+	- Link multiple providers to one user identity.
+2. Role-Based Admin Panel (Advanced)
+	- Enable/disable users, role assignment workflow, session revocation UX.
+3. Session & Device Management
+	- Active session listing and remote logout controls.
+4. Two-Factor Authentication (2FA)
+	- TOTP enrollment, verification, recovery codes.
+5. Security Audit Features
+	- Login history, failed-attempt tracking, suspicious activity alerts.
+6. Better Error UX (Advanced)
+	- Dedicated views for all auth edge cases with guided recovery.
+7. API Quality Features (Remaining)
+	- Pagination/filtering standardization.
+	- Unified error schema across all endpoints.
+8. Production Readiness (Remaining)
+	- Flyway/Liquibase migration baseline.
+	- Monitoring/observability setup.
+	- Expanded automated test coverage for backend/frontend auth scenarios.

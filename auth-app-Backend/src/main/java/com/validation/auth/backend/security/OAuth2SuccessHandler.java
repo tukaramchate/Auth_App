@@ -1,17 +1,9 @@
 package com.validation.auth.backend.security;
 
-import com.validation.auth.backend.entities.Provider;
-import com.validation.auth.backend.entities.RefreshToken;
-import com.validation.auth.backend.entities.User;
-import com.validation.auth.backend.repositores.RefreshTokenRepository;
-import com.validation.auth.backend.repositores.UserRepository;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import java.io.IOException;
+import java.time.Instant;
+import java.util.UUID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,10 +13,18 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.sql.Ref;
-import java.time.Instant;
-import java.util.UUID;
+import com.validation.auth.backend.entities.Provider;
+import com.validation.auth.backend.entities.RefreshToken;
+import com.validation.auth.backend.entities.User;
+import com.validation.auth.backend.repositores.RefreshTokenRepository;
+import com.validation.auth.backend.repositores.UserRepository;
+import com.validation.auth.backend.services.DefaultRoleService;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
@@ -35,6 +35,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private final JwtService jwtService;
     private final CookieService cookieService;
     private final RefreshTokenRepository refreshTokenRepository;
+        private final DefaultRoleService defaultRoleService;
 
     @Value("${app.auth.frontend.success-redirect}")
     private String frontEndSuccessUrl;
@@ -44,7 +45,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     @Transactional
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         logger.info("Successful authentication");
-        logger.info(authentication.toString());
 
 
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
@@ -56,8 +56,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
             registrationId = token.getAuthorizedClientRegistrationId();
         }
 
-        logger.info("registrationId:" + registrationId);
-        logger.info("user:" + oAuth2User.getAttributes().toString());
+        logger.info("OAuth2 registrationId: {}", registrationId);
 
         User user;
         switch (registrationId) {
@@ -139,6 +138,11 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         }
 
+        if (user.getRoles() == null || user.getRoles().isEmpty()) {
+            user.setRoles(defaultRoleService.ensureAtLeastUserRole(user.getRoles()));
+            user = userRepository.save(user);
+        }
+
         String jti = UUID.randomUUID().toString();
         RefreshToken refreshTokenOb = RefreshToken.builder()
                 .jti(jti)
@@ -150,7 +154,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         refreshTokenRepository.save(refreshTokenOb);
 
-        String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user, refreshTokenOb.getJti());
         cookieService.attachRefreshCookie(response, refreshToken, (int) jwtService.getRefreshTtlSeconds());
 //        response.getWriter().write("Login successful");

@@ -1,8 +1,5 @@
 package com.validation.auth.backend.exceptions;
 
-import com.validation.auth.backend.dtos.ApiError;
-import com.validation.auth.backend.dtos.ErrorResponse;
-import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -13,6 +10,11 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import com.validation.auth.backend.dtos.ApiError;
+import com.validation.auth.backend.dtos.ErrorResponse;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -40,7 +42,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> hanleIllegalArgumentException(ResourceNotFoundException exception){
+    public ResponseEntity<ErrorResponse> hanleIllegalArgumentException(IllegalArgumentException exception){
         ErrorResponse internalServerError = new ErrorResponse(exception.getMessage(), HttpStatus.BAD_REQUEST,400);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(internalServerError);
     }

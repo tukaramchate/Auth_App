@@ -14,6 +14,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,6 +43,7 @@ import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @RestController
@@ -59,10 +61,9 @@ public class AuthController {
     private final CookieService cookieService;
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+    public ResponseEntity<TokenResponse> login(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
 
-        //authenticate
-        Authentication authenticate = authenticate(loginRequest);
+        authenticate(loginRequest);
         User user = userRepository.findByEmail(loginRequest.email()).orElseThrow(() ->
                 new BadCredentialsException("Invalid Username or Password"));
         if (!user.isEnable()) {
@@ -90,14 +91,14 @@ public class AuthController {
         cookieService.attachRefreshCookie(response, refreshToken, (int) jwtService.getRefreshTtlSeconds());
         cookieService.addNoStoreHeaders(response);
 
-        TokenResponse tokenResponse = TokenResponse.of(accessToken, refreshToken, jwtService.getAccessTtlSeconds(), mapper.map(user, UserDto.class));
+        TokenResponse tokenResponse = TokenResponse.of(accessToken, jwtService.getAccessTtlSeconds(), mapper.map(user, UserDto.class));
         return ResponseEntity.ok(tokenResponse);
     }
 
     private Authentication authenticate(LoginRequest loginRequest) {
         try {
             return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.email(), loginRequest.password()));
-        } catch (Exception e) {
+        } catch (AuthenticationException e) {
             throw new BadCredentialsException("Invalid Username or Password !!");
         }
     }
@@ -105,11 +106,11 @@ public class AuthController {
 
     //access and refresh token renew karne lie lie api
     @PostMapping("/refresh")
-    public ResponseEntity<TokenResponse> refreshToken(
+        public ResponseEntity<TokenResponse> refreshToken(
             @RequestBody(required = false) RefreshTokenRequest body,
             HttpServletResponse response,
             HttpServletRequest request
-    ) throws InterruptedException {
+        ) {
 
 
         //Thread.sleep(5000);
@@ -160,7 +161,7 @@ public class AuthController {
 
         cookieService.attachRefreshCookie(response, newRefreshToken, (int) jwtService.getRefreshTtlSeconds());
         cookieService.addNoStoreHeaders(response);
-        return ResponseEntity.ok(TokenResponse.of(newAccessToken, newRefreshToken, jwtService.getAccessTtlSeconds(), mapper.map(user, UserDto.class)));
+        return ResponseEntity.ok(TokenResponse.of(newAccessToken, jwtService.getAccessTtlSeconds(), mapper.map(user, UserDto.class)));
 
     }
 
@@ -235,7 +236,7 @@ public class AuthController {
 
 
     @PostMapping("/register")
-    public ResponseEntity<UserDto> registerUser(@RequestBody UserDto userDto) {
+    public ResponseEntity<UserDto> registerUser(@Valid @RequestBody UserDto userDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(authService.registerUser(userDto));
     }
 
@@ -246,19 +247,19 @@ public class AuthController {
     }
 
     @PostMapping("/resend-verification")
-    public ResponseEntity<MessageResponse> resendVerification(@RequestBody ResendVerificationRequest request) {
+    public ResponseEntity<MessageResponse> resendVerification(@Valid @RequestBody ResendVerificationRequest request) {
         authService.resendVerificationEmail(request.email());
         return ResponseEntity.ok(new MessageResponse("Verification email sent"));
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<MessageResponse> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+    public ResponseEntity<MessageResponse> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
         authService.forgotPassword(request.email());
         return ResponseEntity.ok(new MessageResponse("If the email exists, a reset link has been sent"));
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<MessageResponse> resetPassword(@RequestBody ResetPasswordRequest request) {
+    public ResponseEntity<MessageResponse> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
         authService.resetPassword(request.token(), request.newPassword());
         return ResponseEntity.ok(new MessageResponse("Password reset successful"));
     }
