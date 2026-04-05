@@ -27,6 +27,10 @@ Completed
 	- Revoke all sessions implemented.
 
 Pending / Next
+0. Profile Update Feature
+	- Implement self profile edit (name, image) from user profile page.
+	- Enforce self-only update with dedicated endpoint and validation.
+	- Implementation plan: docs/PROFILE_UPDATE_IMPLEMENTATION_PLAN.md
 1. OAuth Account Linking
 	- Link multiple providers to one user identity.
 2. Two-Factor Authentication (2FA)
@@ -38,6 +42,7 @@ Pending / Next
 5. API Quality Features (Remaining)
 	- Pagination/filtering standardization.
 	- Unified error schema across all endpoints.
+	- Implementation plan: docs/API_QUALITY_IMPLEMENTATION_PLAN.md
 6. Production Readiness (Remaining)
 	- Flyway/Liquibase migration baseline.
 	- Monitoring/observability setup.

@@ -25,7 +25,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.validation.auth.backend.dtos.ApiError;
+import com.validation.auth.backend.dtos.ApiErrorResponse;
 import com.validation.auth.backend.security.JwtAuthenticationFilter;
 import com.validation.auth.backend.security.RateLimitingFilter;
 
@@ -77,13 +77,28 @@ public class  SecurityConfig {
                     logger.debug("Unauthorized access attempt: {}", e.getMessage());
                     response.setStatus(401);
                     response.setContentType("application/json");
-                    String message = e.getMessage();
-
-                    String error = (String) request.getAttribute("error");
-                    if (error != null) {
-                        message = error;
-                    }
-                    var apiError = ApiError.of(HttpStatus.UNAUTHORIZED.value(), "Unauthorized Access", message, request.getRequestURI(), true);
+                    var apiError = ApiErrorResponse.of(
+                            HttpStatus.UNAUTHORIZED.value(),
+                            "UNAUTHORIZED",
+                            "Authentication Failed",
+                            "Your session expired or credentials are invalid. Please log in again.",
+                            request.getRequestURI(),
+                            java.util.List.of()
+                    );
+                    var objectMapper = new ObjectMapper();
+                    response.getWriter().write(objectMapper.writeValueAsString(apiError));
+                }).accessDeniedHandler((request, response, exDenied) -> {
+                    logger.debug("Forbidden access attempt: {}", exDenied.getMessage());
+                    response.setStatus(403);
+                    response.setContentType("application/json");
+                    var apiError = ApiErrorResponse.of(
+                            HttpStatus.FORBIDDEN.value(),
+                            "FORBIDDEN",
+                            "Access Denied",
+                            "You do not have permission to perform this action.",
+                            request.getRequestURI(),
+                            java.util.List.of()
+                    );
                     var objectMapper = new ObjectMapper();
                     response.getWriter().write(objectMapper.writeValueAsString(apiError));
                 }))
