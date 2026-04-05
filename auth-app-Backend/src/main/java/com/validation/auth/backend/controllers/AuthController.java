@@ -38,6 +38,7 @@ import com.validation.auth.backend.repositores.UserRepository;
 import com.validation.auth.backend.security.CookieService;
 import com.validation.auth.backend.security.JwtService;
 import com.validation.auth.backend.services.AuthService;
+import com.validation.auth.backend.services.SessionService;
 
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.Cookie;
@@ -59,9 +60,10 @@ public class AuthController {
     private final JwtService jwtService;
     private final ModelMapper mapper;
     private final CookieService cookieService;
+    private final SessionService sessionService;
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> login(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+    public ResponseEntity<TokenResponse> login(@Valid @RequestBody LoginRequest loginRequest, HttpServletRequest request, HttpServletResponse response) {
 
         authenticate(loginRequest);
         User user = userRepository.findByEmail(loginRequest.email()).orElseThrow(() ->
@@ -71,16 +73,7 @@ public class AuthController {
 
         }
         String jti = UUID.randomUUID().toString();
-        var refreshTokenOb = RefreshToken.builder()
-                .jti(jti)
-                .user(user)
-                .createdAt(Instant.now())
-                .expiresAt(Instant.now().plusSeconds(jwtService.getRefreshTtlSeconds()))
-                .revoked(false)
-                .build();
-
-        //refresh token save--information
-        refreshTokenRepository.save(refreshTokenOb);
+        var refreshTokenOb = sessionService.createSession(user, jti, Instant.now().plusSeconds(jwtService.getRefreshTtlSeconds()), request);
 
         //access token--generate
         String accessToken = jwtService.generateAccessToken(user);
@@ -139,6 +132,8 @@ public class AuthController {
             throw new BadCredentialsException("Refresh token does not belong to this user");
         }
 
+        sessionService.touchSession(jti);
+
         //refresh token ko rotate:
         storedRefreshToken.setRevoked(true);
         String newJti= UUID.randomUUID().toString();
@@ -147,15 +142,7 @@ public class AuthController {
 
         User user = storedRefreshToken.getUser();
 
-        var newRefreshTokenOb = RefreshToken.builder()
-                .jti(newJti)
-                .user(user)
-                .createdAt(Instant.now())
-                .expiresAt(Instant.now().plusSeconds(jwtService.getRefreshTtlSeconds()))
-                .revoked(false)
-                .build();
-
-        refreshTokenRepository.save(newRefreshTokenOb);
+        var newRefreshTokenOb = sessionService.createSession(user, newJti, Instant.now().plusSeconds(jwtService.getRefreshTtlSeconds()), request);
         String newAccessToken= jwtService.generateAccessToken(user);
         String newRefreshToken = jwtService.generateRefreshToken(user, newRefreshTokenOb.getJti());
 

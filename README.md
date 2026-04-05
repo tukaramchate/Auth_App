@@ -1,48 +1,54 @@
 # Auth App
 
-Full‑stack authentication and authorization app built with **Spring Boot** (backend) and **React** (frontend). It supports JWT-based login, refresh tokens, and OAuth2 social login.
+Full-stack authentication and authorization app built with Spring Boot on the backend and React on the frontend. It supports email/password auth, OAuth2 login, email verification, password recovery, role-based admin controls, and active session management.
 
-## Features
+## Repo layout
 
-- JWT authentication (access + refresh tokens)
-- OAuth2 login (Google, GitHub)
-- Role-based access control
-- User registration, profile, and logout
-- Secure cookie/token handling
-- Swagger/OpenAPI docs (backend)
+- `auth-app-Backend/` - Spring Boot API and security layer
+- `auth-app-frontend/` - React user interface
 
-## Project structure
+## Current capabilities
 
-- `auth-app-Backend/` — Spring Boot backend service (see its README for setup & API docs)
-- `auth-app-Frontend/` — React frontend (if present)
+- JWT login, refresh, and logout flows
+- OAuth2 sign-in with Google, GitHub, and LinkedIn
+- Email verification and resend flow
+- Forgot password and reset password flow
+- User profile, dashboard, and admin management screens
+- Active session listing and remote session revocation
+- Role-based access control and request validation
+- Rate limiting and security hardening on auth endpoints
 
-## Getting started (quick)
+## Run locally
 
 ### Backend
 
 ```bash
 cd auth-app-Backend
-# configure env (see auth-app-Backend/README.md)
+copy .env.example .env
 ./mvnw spring-boot:run
 ```
 
-Backend runs (dev) at: `http://localhost:8083`
+Backend default URL: `http://localhost:8083`
+
 Swagger UI: `http://localhost:8083/swagger-ui.html`
 
 ### Frontend
 
 ```bash
-cd auth-app-Frontend
+cd auth-app-frontend
 npm install
 npm run dev
 ```
 
-Frontend typically runs at: `http://localhost:5173`
+Frontend default URL: `http://localhost:5173`
 
 ## Configuration
 
-Backend configuration is documented in `auth-app-Backend/README.md` (DB, JWT secret, OAuth client IDs, CORS URLs, profiles).
+- Backend environment variables are documented in `auth-app-Backend/README.md`.
+- Frontend environment variables are documented in `auth-app-frontend/README.md`.
 
-## License
+## Notes
 
-MIT (add a LICENSE file if you want to publish under MIT).
+- The frontend refreshes the session on load using the backend refresh endpoint.
+- Access tokens are not persisted in browser storage; user state and auth status are restored separately.
+- The backend exposes profile, admin, and session management endpoints under `/api/v1`.

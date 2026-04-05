@@ -1,8 +1,6 @@
 package com.validation.auth.backend.security;
 
 import java.io.IOException;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Map;
@@ -19,7 +17,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.validation.auth.backend.config.RateLimitProperties;
-import com.validation.auth.backend.dtos.ApiError;
+import com.validation.auth.backend.dtos.ApiErrorResponse;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -74,12 +72,13 @@ public class RateLimitingFilter extends OncePerRequestFilter {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Retry-After", String.valueOf(Math.max(1L, rule.getWindowSeconds())));
 
-        ApiError apiError = new ApiError(
+        ApiErrorResponse apiError = ApiErrorResponse.of(
                 HttpStatus.TOO_MANY_REQUESTS.value(),
-                "Too Many Requests",
-                "Rate limit exceeded. Please try again later.",
+                "RATE_LIMITED",
+                "Rate Limited",
+                "Too many attempts. Please wait a minute and try again.",
                 request.getRequestURI(),
-                OffsetDateTime.now(ZoneOffset.UTC)
+                java.util.List.of()
         );
 
         response.getWriter().write(objectMapper.writeValueAsString(apiError));
